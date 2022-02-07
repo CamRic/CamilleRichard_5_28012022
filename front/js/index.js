@@ -6,7 +6,7 @@ loadConfig().then(data => {
             for (jsonProduct of jsonProductList) {
                 let product = new Product(jsonProduct); // creating an object for one product
                 // adding html for each product
-                document.querySelector('.items').innerHTML += `<a href=''>
+                document.querySelector('.items').innerHTML += `<a href='product.html?id=${product._id}'>
                                                                 <article>
                                                                     <img src='${product.imageUrl}' alt='${product.altTxt}'>
                                                                     <h3 class='productName'>${product.name}</h3>
