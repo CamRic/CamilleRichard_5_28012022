@@ -14,9 +14,14 @@ loadConfig().then(data => {
         .then(data => data.json())
         .then(jsonProduct => {
             let product = new Product(jsonProduct);
-            document.querySelector(".item__img").innerHTML += `<img src="${product.imageUrl}" alt="${product.altTxt00}" />`;
+            let productColorList = product.colors;
+            document.querySelector(".item__img").innerHTML += `<img src="${product.imageUrl}" alt="${product.altTxt}" />`;
             document.getElementById("title").textContent = product.name;
             document.getElementById("price").textContent = product.price;
             document.getElementById("description").textContent = product.description;
+
+            for (color of productColorList) {
+                document.getElementById("colors").innerHTML += `<option value="${color}">` + color + '</option>';
+            }
         })
 })
