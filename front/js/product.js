@@ -30,7 +30,11 @@ loadConfig().then(data => {
                 let orderedProduct = {
                                         id: productId,
                                         color: document.getElementById("colors").options[document.getElementById("colors").selectedIndex].text,
-                                        quantity: parseInt(document.getElementById("quantity").value) 
+                                        quantity: parseInt(document.getElementById("quantity").value),
+                                        imgUrl: product.imageUrl,
+                                        name: product.name,
+                                        altTxt: product.altTxt,
+                                        price: product.price
                                     };
                 addProductToCart(orderedProduct);
                 console.log(getOrderList());
