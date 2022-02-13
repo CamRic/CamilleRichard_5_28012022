@@ -1,3 +1,8 @@
+// récupérer données produit
+let hosturl = await loadConfig()
+
+console.log(hosturl)
+
 
 // recuperer url
 var str_Url = document.location.href;
