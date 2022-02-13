@@ -1,9 +1,3 @@
-// récupérer données produit
-let hosturl = await loadConfig()
-
-console.log(hosturl)
-
-
 // recuperer url
 var str_Url = document.location.href;
 var url = new URL(str_Url);
@@ -12,37 +6,42 @@ var url = new URL(str_Url);
 var productId = url.searchParams.get("id");
 
 // recuperer produit
+async function getProduct(productId) {
+    let product = await fetch("http://localhost:3000/api/products/" + productId) // example id: 055743915a544fde83cfdfc904935ee7
+    return product.json()
+}
 
-loadConfig().then(data => {
-    config = data;
-    fetch(config.host + "/api/products/" + productId)
-        .then(data => data.json())
-        .then(jsonProduct => {
-            // adding product datas on page
-            let product = new Product(jsonProduct);
-            let productColorList = product.colors;
+// ajouter donnees produit à la page
+function addProductDataToPage(productId) {
+    getProduct(productId)
+            .then(res => {
+            product = res
             document.querySelector(".item__img").innerHTML += `<img src="${product.imageUrl}" alt="${product.altTxt}" />`;
             document.getElementById("title").textContent = product.name;
             document.getElementById("price").textContent = product.price;
             document.getElementById("description").textContent = product.description;
-            for (color of productColorList) {
-                document.getElementById("colors").innerHTML += `<option value="${color}">` + color + '</option>';
+            for (let i = 0; i < product.colors.length; i++) {
+                document.getElementById("colors").innerHTML += `<option value="${product.colors[i]}">` + product.colors[i] + '</option>';
             }
-
-            // panier
-            document.getElementById("addToCart").addEventListener("click", function() {
-                console.log(getOrderList());
-                let orderedProduct = {
-                                        id: productId,
-                                        color: document.getElementById("colors").options[document.getElementById("colors").selectedIndex].text,
-                                        quantity: parseInt(document.getElementById("quantity").value),
-                                        imgUrl: product.imageUrl,
-                                        name: product.name,
-                                        altTxt: product.altTxt,
-                                        price: product.price
-                                    };
-                addProductToCart(orderedProduct);
-                console.log(getOrderList());
             })
-        })
-})
+            .catch(err => {
+                console.log(err)
+            })
+}
+
+// ajouter produit au panier
+function setProductOrderEvent(productId) {
+    document.getElementById("addToCart").addEventListener("click", function() {
+        let orderedProduct = {
+                                    id: productId,
+                                    color: document.getElementById("colors").options[document.getElementById("colors").selectedIndex].text,
+                                    quantity: parseInt(document.getElementById("quantity").value),
+                            }
+        addProductToCart(orderedProduct);
+    })
+}
+
+
+// script
+addProductDataToPage(productId)
+setProductOrderEvent(productId)
