@@ -11,6 +11,7 @@ async function getProduct(productId) {
     return product.json()
 }
 
+
 // ajouter donnees produit à la page
 function addProductDataToPage(productId) {
     getProduct(productId)
@@ -32,12 +33,18 @@ function addProductDataToPage(productId) {
 // ajouter produit au panier
 function setProductOrderEvent(productId) {
     document.getElementById("addToCart").addEventListener("click", function() {
-        let orderedProduct = {
-                                    id: productId,
-                                    color: document.getElementById("colors").options[document.getElementById("colors").selectedIndex].text,
-                                    quantity: parseInt(document.getElementById("quantity").value),
-                            }
-        addProductToCart(orderedProduct);
+        if (document.getElementById("colors").options[document.getElementById("colors").selectedIndex].value == 0) {
+            console.log("error color option")
+        } else {
+            let orderedProduct = {
+                id: productId,
+                color: document.getElementById("colors").options[document.getElementById("colors").selectedIndex].text,
+                quantity: parseInt(document.getElementById("quantity").value),
+                }
+            console.log("product added to cart")
+            addProductToCart(orderedProduct);
+        }
+        
     })
 }
 

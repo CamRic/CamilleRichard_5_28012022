@@ -2,19 +2,33 @@
 // charger données panier
 let orderList = getOrderList();
 
+
+
+// test
+function setProductData(productId, cartItem) {
+    getProduct(productId)
+        .then(res => {
+            cartItem.querySelector(".cart__item__img img").setAttribute("src", res.imageUrl)
+            cartItem.querySelector(".cart__item__img img").setAttribute("alt", res.altTxt)
+
+            cartItem.querySelector(".cart__item__content__description").innerHTML = `   <h2>${res.name}</h2>
+                                                                                        <p>${cartItem.dataset.color}</p>
+                                                                                        <p>${res.price}€</p> `
+        })
+}
+
+
 // afficher produits dans panier
 function addCartToPage(orderLst) {
     for (product of orderLst) {
         document.getElementById("cart__items").innerHTML += 
             `<article class="cart__item" data-id="${product.id}" data-color="${product.color}">
                 <div class="cart__item__img">
-                    <img src="${product.imgUrl}" alt="${product.altTxt}">
+                    <img src="" alt="">
                 </div>
                 <div class="cart__item__content">
                     <div class="cart__item__content__description">
-                        <h2>${product.name}</h2>
-                        <p>${product.color}</p>
-                        <p>${product.price}</p>
+                    
                     </div>
                     <div class="cart__item__content__settings">
                         <div class="cart__item__content__settings__quantity">
@@ -27,18 +41,32 @@ function addCartToPage(orderLst) {
                     </div>
                 </div>
             </article>`;
-
     }
+    document.querySelectorAll(".cart__item").forEach(cartItem => {
+        prdctId = cartItem.dataset.id
+        setProductData(prdctId, cartItem)
+    })
 }
 
 // calculer le cout total
-function addTotalPrice(cart) {
-    let total = 0;
-    for (product of cart) {
-        total += parseInt(product.price) * parseInt(product.quantity);
+function setTotalPrice(orderLst) {
+    total = 0
+    if (orderLst.length > 0) {
+        for (product of orderLst) {
+            let quantity = product.quantity
+            getProduct(product.id)
+                .then(res => {
+                    total += parseInt(res.price) * quantity
+                    console.log(total)
+                    document.getElementById("totalPrice").textContent = total;
+                })
+        }
+    } else {
+        document.getElementById("totalPrice").textContent = total;
     }
-    document.getElementById("totalPrice").innerHTML = total;
+    
 }
+
 
 // calculer le nombre d'articles
 function addArticleCount(cart) {
@@ -46,13 +74,15 @@ function addArticleCount(cart) {
     for (product of cart) {
         articleCount += parseInt(product.quantity);
     }
-    document.getElementById("totalQuantity").innerHTML = articleCount;
+    document.getElementById("totalQuantity").innerHTML = articleCount; // a voir
 }
 
 // script
 addCartToPage(orderList);
-addTotalPrice(orderList);
 addArticleCount(orderList);
+setTotalPrice(orderList)
+
+
 
     // event listener
 // deleting
@@ -67,7 +97,7 @@ document.querySelectorAll(".deleteItem").forEach(supprButton => {
         }
         saveOrderList(orderList);
         this.closest(".cart__item").remove();
-        addTotalPrice(orderList);
+        setTotalPrice(orderList);
         addArticleCount(orderList);
     })
 })
@@ -82,7 +112,7 @@ document.querySelectorAll(".itemQuantity").forEach(quantityElement => {
                 product.quantity = this.value;
             }
             saveOrderList(orderList);
-            addTotalPrice(orderList);
+            setTotalPrice(orderList);
             addArticleCount(orderList);
         }
     })
@@ -90,27 +120,6 @@ document.querySelectorAll(".itemQuantity").forEach(quantityElement => {
 
 
 // fonction envoi requete
-function sendOrder(order) {
-    let order_id;
-    loadConfig().then(data => {
-        config = data;
-        let responssss = fetch(`${config.host}/api/products/order`, {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(order)
-        })
-        .then(response => response.json())
-        .then(response => {
-            order_id = response;
-            console.log(order_id);
-        })
-    })
-    return order_id;
-}
-
 function sendOrderr(order) {
     let resp = fetch("http://localhost:3000/api/products/order", {
         method: "POST",
@@ -174,7 +183,7 @@ document.getElementById("order").addEventListener("click", function() {
         let order = {
             contact: {
                 firstName: document.getElementById("firstName").value,
-                lastName: document.getElementById("firstName").value,
+                lastName: document.getElementById("lastName").value,
                 address: document.getElementById("address").value,
                 city: document.getElementById("city").value,
                 email: document.getElementById("email").value

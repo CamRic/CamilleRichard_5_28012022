@@ -1,4 +1,1 @@
-! refaire page panier avec request => pas de price en local + FACTORISER !
-
-! un fichier js pour confirmation.html et cart.tml !
-
+revoir fonctions cart.js => refactoriser
