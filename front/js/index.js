@@ -1,3 +1,8 @@
+/*****************
+****************** FONCTIONS
+*****************/
+
+
 // gerer l'ajout d'un produit sur la page
 function addHtmlProduct(jsonProduct) {
     let product = new Product(jsonProduct)
@@ -19,15 +24,19 @@ async function getProductList() {
 // load products on page
 function loadIndexProductList() {
     getProductList()
-    .then((data) => {
-        productList = data
+        .then((data) => {
+            productList = data
 
-        for (let i = 0; i< productList.length; i++) {
-            addHtmlProduct(productList[i])
-        }
+            for (let i = 0; i< productList.length; i++) {
+                addHtmlProduct(productList[i])
+            }
 
-    })
+        })
 }
 
-// script
+
+/*****************
+****************** SCRIPT
+*****************/
+
 loadIndexProductList()

@@ -5,12 +5,10 @@ var url = new URL(str_Url);
 // recuperer id
 var productId = url.searchParams.get("id");
 
-// recuperer produit
-async function getProduct(productId) {
-    let product = await fetch("http://localhost:3000/api/products/" + productId) // example id: 055743915a544fde83cfdfc904935ee7
-    return product.json()
-}
 
+/*****************
+****************** FONCTIONS
+*****************/
 
 // ajouter donnees produit à la page
 function addProductDataToPage(productId) {
@@ -25,14 +23,12 @@ function addProductDataToPage(productId) {
                 document.getElementById("colors").innerHTML += `<option value="${product.colors[i]}">` + product.colors[i] + '</option>';
             }
             })
-            .catch(err => {
-                console.log(err)
-            })
 }
 
 // ajouter produit au panier
 function setProductOrderEvent(productId) {
     document.getElementById("addToCart").addEventListener("click", function() {
+        // si pas de couleur choisie
         if (document.getElementById("colors").options[document.getElementById("colors").selectedIndex].value == 0) {
             console.log("error color option")
         } else {
@@ -49,6 +45,9 @@ function setProductOrderEvent(productId) {
 }
 
 
-// script
+/*****************
+****************** SCRIPT
+*****************/
+
 addProductDataToPage(productId)
 setProductOrderEvent(productId)

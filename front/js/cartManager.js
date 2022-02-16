@@ -2,6 +2,7 @@
 Gestion du panier
 */
 
+// récupérer le panier en local
 function getOrderList() {
     let orderList = localStorage.getItem("orderList");
     if (orderList == null) {
@@ -11,10 +12,12 @@ function getOrderList() {
     }
 }
 
+// enregistrer le panier en local
 function saveOrderList(orderList) {
     localStorage.setItem("orderList", JSON.stringify(orderList));
 }
 
+// ajouter un produit au panier
 function addProductToCart(orderedProduct) {
     let orderList = getOrderList();
     if (orderList.length < 1) {

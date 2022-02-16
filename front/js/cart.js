@@ -1,10 +1,13 @@
 
-// charger données panier
+// charger panier
 let orderList = getOrderList();
 
 
+/*******************
+******************** FONCTIONS
+*******************/
 
-// test
+// récuperer les donnees produit non stockés localement
 function setProductData(productId, cartItem) {
     getProduct(productId)
         .then(res => {
@@ -57,7 +60,6 @@ function setTotalPrice(orderLst) {
             getProduct(product.id)
                 .then(res => {
                     total += parseInt(res.price) * quantity
-                    console.log(total)
                     document.getElementById("totalPrice").textContent = total;
                 })
         }
@@ -77,50 +79,9 @@ function addArticleCount(cart) {
     document.getElementById("totalQuantity").innerHTML = articleCount; // a voir
 }
 
-// script
-addCartToPage(orderList);
-addArticleCount(orderList);
-setTotalPrice(orderList)
-
-
-
-    // event listener
-// deleting
-document.querySelectorAll(".deleteItem").forEach(supprButton => {
-    supprButton.addEventListener("click", function() {
-        let id = this.closest(".cart__item").dataset.id;
-        let color = this.closest(".cart__item").dataset.color;
-        for (product of orderList) {
-            if (product.id == id && product.color == color) {
-                orderList.splice(orderList.indexOf(product));
-            }
-        }
-        saveOrderList(orderList);
-        this.closest(".cart__item").remove();
-        setTotalPrice(orderList);
-        addArticleCount(orderList);
-    })
-})
-
-// modifying
-document.querySelectorAll(".itemQuantity").forEach(quantityElement => {
-    quantityElement.addEventListener("change", function() {
-        let id = this.closest(".cart__item").dataset.id;
-        let color = this.closest(".cart__item").dataset.color;
-        for (product of orderList) {
-            if (product.id == id && product.color == color) {
-                product.quantity = this.value;
-            }
-            saveOrderList(orderList);
-            setTotalPrice(orderList);
-            addArticleCount(orderList);
-        }
-    })
-})
-
 
 // fonction envoi requete
-function sendOrderr(order) {
+function sendOrder(order) {
     let resp = fetch("http://localhost:3000/api/products/order", {
         method: "POST",
         headers: {
@@ -133,72 +94,122 @@ function sendOrderr(order) {
 }
 
 
+/*******************
+******************** EVENEMENTS
+*******************/
+
+
+// deleting
+function setDeleteEvent() {
+    document.querySelectorAll(".deleteItem").forEach(supprButton => {
+        supprButton.addEventListener("click", function() {
+            let id = this.closest(".cart__item").dataset.id;
+            let color = this.closest(".cart__item").dataset.color;
+            for (product of orderList) {
+                if (product.id == id && product.color == color) {
+                    orderList.splice(orderList.indexOf(product));
+                }
+            }
+            saveOrderList(orderList);
+            this.closest(".cart__item").remove();
+            setTotalPrice(orderList);
+            addArticleCount(orderList);
+        })
+    })
+}
+
+// modifying
+function setModifEvent() {
+    document.querySelectorAll(".itemQuantity").forEach(quantityElement => {
+        quantityElement.addEventListener("change", function() {
+            let id = this.closest(".cart__item").dataset.id;
+            let color = this.closest(".cart__item").dataset.color;
+            for (product of orderList) {
+                if (product.id == id && product.color == color) {
+                    product.quantity = this.value;
+                }
+                saveOrderList(orderList);
+                setTotalPrice(orderList);
+                addArticleCount(orderList);
+            }
+        })
+    })
+}
+
+
 // envoi formulaire
-
-document.getElementById("order").addEventListener("click", function() {
-    let confirmationlink;
-    let nameRegex = /^[a-zA-Z-]/;
-    let emailRegex = /^([a-zA-Z_.-]+@[a-zA-Z-]{2,}[.][a-zA-Z]{2,4})$/;
-    let cityRegex = /^[a-zA-Z-]/;
-    let errorMessage = "Entrée non valide";
-    let validInputCount = 0;
-    if ( !document.getElementById("firstName").value.match(nameRegex)) {
-        console.log(document.getElementById("firstName").value);
-        document.getElementById("firstNameErrorMsg").innerText = errorMessage;
-    } else {
-        validInputCount++;
-    }
-    if ( !document.getElementById("lastName").value.match(nameRegex)) {
-        console.log(document.getElementById("lastName").value);
-        document.getElementById("lastNameErrorMsg").innerText = errorMessage;
-    } else {
-        validInputCount++;
-    }
-    if ( !document.getElementById("email").value.match(emailRegex)) {
-        console.log(errorMessage);
-        document.getElementById("emailErrorMsg").innerText = errorMessage;
-    } else {
-        validInputCount++;
-    }
-    if ( !document.getElementById("city").value.match(cityRegex)) {
-        console.log(document.getElementById("city").value);
-        document.getElementById("cityErrorMsg").innerText = errorMessage;
-    } else {
-        validInputCount++;
-    }
-    let inputAdress = document.getElementById("address").value;
-    if (inputAdress.length < 1) {
-        document.getElementById("addressErrorMsg").innerText = errorMessage;
-    } else {
-        validInputCount++;
-    }
-
-    console.log(validInputCount);
-
-    if (validInputCount == 5) {
-        let orderedProducts = [];
-        for (product of orderList) {
-            orderedProducts.push(product.id);
+function setSendFormEvent() {
+    document.getElementById("order").addEventListener("click", function() {
+        // verification des entrees utilisateur
+        let confirmationlink;
+        let nameRegex = /^[a-zA-Z-]/;
+        let emailRegex = /^([a-zA-Z_.-]+@[a-zA-Z-]{2,}[.][a-zA-Z]{2,4})$/;
+        let cityRegex = /^[a-zA-Z-]/;
+        let errorMessage = "Entrée non valide";
+        let validInputCount = 0;
+        if ( !document.getElementById("firstName").value.match(nameRegex)) {
+            document.getElementById("firstNameErrorMsg").innerText = errorMessage;
+        } else {
+            validInputCount++;
         }
-        let order = {
-            contact: {
-                firstName: document.getElementById("firstName").value,
-                lastName: document.getElementById("lastName").value,
-                address: document.getElementById("address").value,
-                city: document.getElementById("city").value,
-                email: document.getElementById("email").value
-            },
-            products: orderedProducts
+        if ( !document.getElementById("lastName").value.match(nameRegex)) {
+            document.getElementById("lastNameErrorMsg").innerText = errorMessage;
+        } else {
+            validInputCount++;
         }
+        if ( !document.getElementById("email").value.match(emailRegex)) {
+            console.log(errorMessage);
+            document.getElementById("emailErrorMsg").innerText = errorMessage;
+        } else {
+            validInputCount++;
+        }
+        if ( !document.getElementById("city").value.match(cityRegex)) {
+            document.getElementById("cityErrorMsg").innerText = errorMessage;
+        } else {
+            validInputCount++;
+        }
+        if (document.getElementById("address").value.length < 1) {
+            document.getElementById("addressErrorMsg").innerText = errorMessage;
+        } else {
+            validInputCount++;
+        }
+    
+        // si toutes les entrees valides envoi de la requete, puis redirection vers page confirmation
+        if (validInputCount == 5) {
+            let orderedProducts = [];
+            for (product of orderList) {
+                orderedProducts.push(product.id);
+            }
+    
+            let order = {
+                contact: {
+                    firstName: document.getElementById("firstName").value,
+                    lastName: document.getElementById("lastName").value,
+                    address: document.getElementById("address").value,
+                    city: document.getElementById("city").value,
+                    email: document.getElementById("email").value
+                },
+                products: orderedProducts
+            }
+    
+            sendOrder(order)
+                .then(response => response.json())
+                .then(response => {
+                    document.location.href = "confirmation.html?orderId=" + response.orderId;
+                })
+        }
+    
+    })
+}
 
-        console.log(order);
-        sendOrderr(order)
-            .then(response => response.json())
-            .then(response => {
-                document.location.href = "confirmation.html?orderId=" + response.orderId;
-            })
-    }
 
-})
+/*******************
+******************** SCRIPT
+*******************/
 
-
+addCartToPage(orderList)
+addArticleCount(orderList)
+setTotalPrice(orderList)
+setDeleteEvent()
+setModifEvent()
+setSendFormEvent()
