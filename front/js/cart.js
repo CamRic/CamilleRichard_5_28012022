@@ -2,12 +2,11 @@
 // charger panier
 let orderList = getOrderList();
 
-
 /*******************
 ******************** FONCTIONS
 *******************/
 
-// récuperer les donnees produit non stockés localement
+// récuperer et afficher les donnees produit non stockés localement
 function setProductData(productId, cartItem) {
     getProduct(productId)
         .then(res => {
@@ -52,21 +51,21 @@ function addCartToPage(orderLst) {
 }
 
 // calculer le cout total
-function setTotalPrice(orderLst) {
-    total = 0
-    if (orderLst.length > 0) {
-        for (product of orderLst) {
-            let quantity = product.quantity
-            getProduct(product.id)
-                .then(res => {
-                    total += parseInt(res.price) * quantity
-                    document.getElementById("totalPrice").textContent = total;
-                })
-        }
-    } else {
-        document.getElementById("totalPrice").textContent = total;
+async function updateTotalPrice() {
+    var promiseArray = []
+    for (order of orderList) {
+        promiseArray.push(getProduct(order.id))
     }
-    
+
+    var getProducts = await Promise.all(promiseArray)
+
+    var total = 0
+
+    for (let i = 0; i < getProducts.length; i++) {
+        total += getProducts[i].price * orderList[i].quantity
+    }
+    document.getElementById("totalPrice").textContent = total
+
 }
 
 
@@ -76,7 +75,7 @@ function addArticleCount(cart) {
     for (product of cart) {
         articleCount += parseInt(product.quantity);
     }
-    document.getElementById("totalQuantity").innerHTML = articleCount; // a voir
+    document.getElementById("totalQuantity").textContent = articleCount; // a voir
 }
 
 
@@ -99,7 +98,7 @@ function sendOrder(order) {
 *******************/
 
 
-// deleting
+// supprimer produit
 function setDeleteEvent() {
     document.querySelectorAll(".deleteItem").forEach(supprButton => {
         supprButton.addEventListener("click", function() {
@@ -112,29 +111,33 @@ function setDeleteEvent() {
             }
             saveOrderList(orderList);
             this.closest(".cart__item").remove();
-            setTotalPrice(orderList);
-            addArticleCount(orderList);
+            updateTotalPrice()
+            addArticleCount(orderList)
         })
     })
 }
 
-// modifying
+
+// modifier quantité
+
 function setModifEvent() {
     document.querySelectorAll(".itemQuantity").forEach(quantityElement => {
         quantityElement.addEventListener("change", function() {
-            let id = this.closest(".cart__item").dataset.id;
-            let color = this.closest(".cart__item").dataset.color;
-            for (product of orderList) {
-                if (product.id == id && product.color == color) {
-                    product.quantity = this.value;
+            let id = this.closest(".cart__item").dataset.id
+            let color = this.closest(".cart__item").dataset.color
+            for (let i = 0; i < orderList.length; i++) {
+                if (orderList[i].id == id && orderList[i].color == color) {
+                    orderList[i].quantity = this.value
                 }
-                saveOrderList(orderList);
-                setTotalPrice(orderList);
-                addArticleCount(orderList);
+                saveOrderList(orderList)
+                updateTotalPrice()
+                addArticleCount(orderList)
             }
         })
     })
 }
+
+
 
 
 // envoi formulaire
@@ -209,7 +212,7 @@ function setSendFormEvent() {
 
 addCartToPage(orderList)
 addArticleCount(orderList)
-setTotalPrice(orderList)
+updateTotalPrice()
 setDeleteEvent()
 setModifEvent()
 setSendFormEvent()
