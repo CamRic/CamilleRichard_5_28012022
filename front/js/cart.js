@@ -145,9 +145,9 @@ function setSendFormEvent() {
     document.getElementById("order").addEventListener("click", function() {
         // verification des entrees utilisateur
         let confirmationlink;
-        let nameRegex = /^[a-zA-Z-]/;
+        let nameRegex = /^[a-zA-Z-]+$/;
         let emailRegex = /^([a-zA-Z_.-]+@[a-zA-Z-]{2,}[.][a-zA-Z]{2,4})$/;
-        let cityRegex = /^[a-zA-Z-]/;
+        let cityRegex = /^[a-zA-Z-]+$/;
         let errorMessage = "Entrée non valide";
         let validInputCount = 0;
         if ( !document.getElementById("firstName").value.match(nameRegex)) {

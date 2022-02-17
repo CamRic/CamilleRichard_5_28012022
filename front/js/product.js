@@ -30,15 +30,15 @@ function setProductOrderEvent(productId) {
     document.getElementById("addToCart").addEventListener("click", function() {
         // si pas de couleur choisie
         if (document.getElementById("colors").options[document.getElementById("colors").selectedIndex].value == 0) {
-            console.log("error color option")
+            console.log("erreur: couleur non valide")
         } else {
             let orderedProduct = {
                 id: productId,
                 color: document.getElementById("colors").options[document.getElementById("colors").selectedIndex].text,
                 quantity: parseInt(document.getElementById("quantity").value),
                 }
-            console.log("product added to cart")
             addProductToCart(orderedProduct);
+            console.log("produit ajouté")
         }
         
     })
