@@ -183,7 +183,7 @@ function setSendFormEvent() {
             for (product of orderList) {
                 orderedProducts.push(product.id);
             }
-    
+            // creation objet requète
             let order = {
                 contact: {
                     firstName: document.getElementById("firstName").value,
