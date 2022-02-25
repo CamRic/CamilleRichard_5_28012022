@@ -154,26 +154,31 @@ function setSendFormEvent() {
             document.getElementById("firstNameErrorMsg").innerText = errorMessage;
         } else {
             validInputCount++;
+            document.getElementById("firstNameErrorMsg").innerText = "";
         }
         if ( !document.getElementById("lastName").value.match(nameRegex)) {
             document.getElementById("lastNameErrorMsg").innerText = errorMessage;
         } else {
             validInputCount++;
+            document.getElementById("lastNameErrorMsg").innerText = "";
         }
         if ( !document.getElementById("email").value.match(emailRegex)) {
             console.log(errorMessage);
             document.getElementById("emailErrorMsg").innerText = errorMessage;
         } else {
+            document.getElementById("emailErrorMsg").innerText = "";
             validInputCount++;
         }
         if ( !document.getElementById("city").value.match(cityRegex)) {
             document.getElementById("cityErrorMsg").innerText = errorMessage;
         } else {
+            document.getElementById("cityErrorMsg").innerText = "";
             validInputCount++;
         }
         if (document.getElementById("address").value.length < 1) {
             document.getElementById("addressErrorMsg").innerText = errorMessage;
         } else {
+            document.getElementById("addressErrorMsg").innerText = "";
             validInputCount++;
         }
     
